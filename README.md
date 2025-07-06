@@ -5,3 +5,5 @@
 ```sh
 ./FreeCAD_1.0.1-conda-Linux-x86_64-py311.AppImage --appimage-extract 
 ```
+
+- Create env "FREECAD_LIB_PATH" for "freecad-squashfs-root/usr/lib/"
