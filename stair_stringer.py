@@ -6,14 +6,28 @@ import freecad_env
 
 
 # Parameters
-stringer_thickness = 38.1  # mm
-first_rise_height = 184.15
-rise_height = 184.15
-num_rise = 4
-run_depth = 254.0
-num_run = 3
-kicker_depth = 101.6
-kicker_height = 50.8
+stringer_thickness = 1.5  # mm
+first_rise_height = 6.62
+rise_height = 7.625
+num_rise = 16
+run_depth = 11.5
+num_run = 15
+kicker_depth = 5.5
+kicker_height = 1.5
+
+def inch(inches: float) -> float:
+    """Convert inches to millimeters."""
+    return inches * 25.4
+
+# Define parameters in inches, convert to mm
+stringer_thickness = inch(stringer_thickness)
+first_rise_height  = inch(first_rise_height)
+rise_height        = inch(rise_height)
+num_rise           = 16
+run_depth          = inch(run_depth)
+num_run            = 15
+kicker_depth       = inch(kicker_depth)
+kicker_height      = inch(kicker_height)
 
 import FreeCAD, Part
 
@@ -34,44 +48,61 @@ sketch=body.newObject('Sketcher::SketchObject','Sketch')
 sketch.AttachmentSupport = (doc.getObject('XY_Plane'),[''])
 sketch.MapMode = 'FlatFace'
 
+# run_depth - kicker_depth
 sketch.addGeometry(Part.LineSegment(App.Vector(28.786367,0.000000,0),App.Vector(18.101997,0.000000,0)),False)
 sketch.addConstraint(Sketcher.Constraint('PointOnObject',0,1,-1)) 
 sketch.addConstraint(Sketcher.Constraint('PointOnObject',0,2,-1))
 # sketch.addConstraint(Sketcher.Constraint('Horizontal',0)) 
 
+# kicker_height
 sketch.addGeometry(Part.LineSegment(App.Vector(18.101997,0.000000,0),App.Vector(18.248360,7.090004,0)),False)
 sketch.addConstraint(Sketcher.Constraint('Coincident',0,2,1,1)) 
 sketch.addConstraint(Sketcher.Constraint('Vertical',1)) 
 
+# kicker_depth
 sketch.addGeometry(Part.LineSegment(App.Vector(18.248360,7.090004,0),App.Vector(0.000000,6.650920,0)),False)
 sketch.addConstraint(Sketcher.Constraint('Coincident',1,2,2,1)) 
 sketch.addConstraint(Sketcher.Constraint('PointOnObject',2,2,-2)) 
 sketch.addConstraint(Sketcher.Constraint('Horizontal',2)) 
 
+# first_rise_height - kicker_height
 sketch.addGeometry(Part.LineSegment(App.Vector(0.000000,6.650920,0),App.Vector(0.000000,13.922371,0)),False)
 sketch.addConstraint(Sketcher.Constraint('Coincident',2,2,3,1)) 
 sketch.addConstraint(Sketcher.Constraint('PointOnObject',3,2,-2)) 
 # sketch.addConstraint(Sketcher.Constraint('Vertical',3)) 
 
+# run_depth
 sketch.addGeometry(Part.LineSegment(App.Vector(0.000000,13.922371,0),App.Vector(29.782467,14.664711,0)),False)
 sketch.addConstraint(Sketcher.Constraint('Coincident',3,2,4,1)) 
 sketch.addConstraint(Sketcher.Constraint('Horizontal',4)) 
 
-sketch.addGeometry(Part.LineSegment(App.Vector(29.782467,14.664711,0),App.Vector(30.000813,27.547087,0)),False)
-sketch.addConstraint(Sketcher.Constraint('Coincident',4,2,5,1)) 
-sketch.addConstraint(Sketcher.Constraint('Vertical',5)) 
+# Rise and Run in Loop
 
-sketch.addGeometry(Part.LineSegment(App.Vector(30.000813,27.547087,0),App.Vector(48.996853,27.765432,0)),False)
-sketch.addConstraint(Sketcher.Constraint('Coincident',5,2,6,1)) 
-sketch.addConstraint(Sketcher.Constraint('Horizontal',6))
+i=5
 
+for _ in range(0,num_run-1):
+    # rise_height
+    sketch.addGeometry(Part.LineSegment(App.Vector(29.782467,14.664711,0),App.Vector(30.000813,27.547087,0)),False)
+    sketch.addConstraint(Sketcher.Constraint('Coincident',i-1,2,i,1)) 
+    sketch.addConstraint(Sketcher.Constraint('Vertical',i)) 
+    i+=1
+
+    # run_depth
+    sketch.addGeometry(Part.LineSegment(App.Vector(30.000813,27.547087,0),App.Vector(48.996853,27.765432,0)),False)
+    sketch.addConstraint(Sketcher.Constraint('Coincident',i-1,2,i,1)) 
+    sketch.addConstraint(Sketcher.Constraint('Horizontal',i))
+    i+=1
+
+# end rise reverse, rise_height
 sketch.addGeometry(Part.LineSegment(App.Vector(48.996853,27.765432,0),App.Vector(49.215199,14.228024,0)),False)
-sketch.addConstraint(Sketcher.Constraint('Coincident',6,2,7,1)) 
-sketch.addConstraint(Sketcher.Constraint('Vertical',7))
+sketch.addConstraint(Sketcher.Constraint('Coincident',i-1,2,i,1)) 
+sketch.addConstraint(Sketcher.Constraint('Vertical',i))
+i+=1
 
+# close loop path
 sketch.addGeometry(Part.LineSegment(App.Vector(49.215199,14.228024,0),App.Vector(28.786367,0.000000,0)),False)
-sketch.addConstraint(Sketcher.Constraint('Coincident',7,2,8,1)) 
-sketch.addConstraint(Sketcher.Constraint('Coincident',8,2,0,1))
+sketch.addConstraint(Sketcher.Constraint('Coincident',i-1,2,i,1)) 
+sketch.addConstraint(Sketcher.Constraint('Coincident',i,2,0,1))
 
 # sketch.delConstraint(10)#11
 # sketch.delConstraint(2)#3
@@ -105,18 +136,26 @@ sketch.addConstraint(Sketcher.Constraint('DistanceY',3,1,3,2,first_rise_height -
 # sketch.addConstraint(Sketcher.Constraint('Distance',4,1,4,2,run_depth)) 
 sketch.addConstraint(Sketcher.Constraint('DistanceX',4,1,4,2,run_depth)) 
 
-# rise_height
-# sketch.addConstraint(Sketcher.Constraint('Distance',5,1,5,2,rise_height)) 
-sketch.addConstraint(Sketcher.Constraint('DistanceY',5,1,5,2,rise_height)) 
 
-# run_depth
-# sketch.addConstraint(Sketcher.Constraint('Distance',6,1,6,2,run_depth)) 
-sketch.addConstraint(Sketcher.Constraint('DistanceX',6,1,6,2,run_depth)) 
+# Rise and Run in Loop
+ 
+i=5
+
+for _ in range(0,num_run-1):
+    # rise_height
+    # sketch.addConstraint(Sketcher.Constraint('Distance',5,1,5,2,rise_height)) 
+    sketch.addConstraint(Sketcher.Constraint('DistanceY',i,1,i,2,rise_height)) 
+    i+=1
+
+    # run_depth
+    # sketch.addConstraint(Sketcher.Constraint('Distance',6,1,6,2,run_depth)) 
+    sketch.addConstraint(Sketcher.Constraint('DistanceX',i,1,i,2,run_depth)) 
+    i+=1
 
 
 # end rise reverse, rise_height
 # sketch.addConstraint(Sketcher.Constraint('Distance',7,1,7,2,rise_height))
-sketch.addConstraint(Sketcher.Constraint('DistanceY',7,2,7,1,rise_height)) 
+sketch.addConstraint(Sketcher.Constraint('DistanceY',i,2,i,1,rise_height)) 
 
 
 pad=body.newObject('PartDesign::Pad','Pad')
@@ -177,18 +216,18 @@ else:
 del __objs__
 
 
-__objs__ = []
-__objs__.append(body)
+# __objs__ = []
+# __objs__.append(body)
 
-import ImportGui
-step_file_name=f"/home/admi/Desktop/projects/freecad-scripting/{output_folder}/{file_name}.step"
+# import ImportGui
+# step_file_name=f"/home/admi/Desktop/projects/freecad-scripting/{output_folder}/{file_name}.step"
 
-if hasattr(ImportGui, "exportOptions"):
-    options = ImportGui.exportOptions(step_file_name)
-    ImportGui.export(__objs__, step_file_name, options)
-else:
-    ImportGui.export(__objs__, step_file_name)
+# if hasattr(ImportGui, "exportOptions"):
+#     options = ImportGui.exportOptions(step_file_name)
+#     ImportGui.export(__objs__, step_file_name, options)
+# else:
+#     ImportGui.export(__objs__, step_file_name)
 
-del __objs__
+# del __objs__
 
 
