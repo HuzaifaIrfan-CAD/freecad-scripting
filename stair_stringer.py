@@ -84,48 +84,48 @@ sketch.addConstraint(Sketcher.Constraint('Coincident',8,2,0,1))
 # 23
 # 21
 
-# run depth - kicker depth
-sketch.addConstraint(Sketcher.Constraint('Distance',0,1,0,2,12.381088))
-# sketch.addConstraint(Sketcher.Constraint('DistanceX',0,2,0,1,12.381088))
+# run_depth - kicker_depth
+# sketch.addConstraint(Sketcher.Constraint('Distance',0,1,0,2,run_depth - kicker_depth))
+sketch.addConstraint(Sketcher.Constraint('DistanceX',0,2,0,1,run_depth - kicker_depth))
 
 # kicker_height
-sketch.addConstraint(Sketcher.Constraint('DistanceY',1,1,1,2,6.276437))
+sketch.addConstraint(Sketcher.Constraint('DistanceY',1,1,1,2,kicker_height))
 # sketch.addConstraint(Sketcher.Constraint('Distance',1,1,1,2,6.276437)) 
 
 # kicker_depth
-sketch.addConstraint(Sketcher.Constraint('Distance',2,1,2,2,19.517277))
-# sketch.addConstraint(Sketcher.Constraint('DistanceX',2,2,2,1,19.517277)) 
+# sketch.addConstraint(Sketcher.Constraint('Distance',2,1,2,2,kicker_depth))
+sketch.addConstraint(Sketcher.Constraint('DistanceX',2,2,2,1,kicker_depth)) 
 
-# rise_height - kicker_height
-sketch.addConstraint(Sketcher.Constraint('Distance',3,1,3,2,7.964808)) 
-# sketch.addConstraint(Sketcher.Constraint('DistanceY',3,1,3,2,7.964808)) 
+# first_rise_height - kicker_height
+# sketch.addConstraint(Sketcher.Constraint('Distance',3,1,3,2,first_rise_height - kicker_height)) 
+sketch.addConstraint(Sketcher.Constraint('DistanceY',3,1,3,2,first_rise_height - kicker_height)) 
 
 
 # run_depth
-sketch.addConstraint(Sketcher.Constraint('Distance',4,1,4,2,25.252468)) 
-# sketch.addConstraint(Sketcher.Constraint('DistanceX',4,1,4,2,25.252468)) 
+# sketch.addConstraint(Sketcher.Constraint('Distance',4,1,4,2,run_depth)) 
+sketch.addConstraint(Sketcher.Constraint('DistanceX',4,1,4,2,run_depth)) 
 
 # rise_height
-sketch.addConstraint(Sketcher.Constraint('Distance',5,1,5,2,11.672087)) 
-# sketch.addConstraint(Sketcher.Constraint('DistanceY',5,1,5,2,11.672087)) 
+# sketch.addConstraint(Sketcher.Constraint('Distance',5,1,5,2,rise_height)) 
+sketch.addConstraint(Sketcher.Constraint('DistanceY',5,1,5,2,rise_height)) 
 
 # run_depth
-sketch.addConstraint(Sketcher.Constraint('Distance',6,1,6,2,23.596853)) 
-# sketch.addConstraint(Sketcher.Constraint('DistanceX',6,1,6,2,23.596853)) 
+# sketch.addConstraint(Sketcher.Constraint('Distance',6,1,6,2,run_depth)) 
+sketch.addConstraint(Sketcher.Constraint('DistanceX',6,1,6,2,run_depth)) 
 
 
-# end rise reverse
-sketch.addConstraint(Sketcher.Constraint('Distance',7,1,7,2,14.346976))
-# sketch.addConstraint(Sketcher.Constraint('DistanceY',7,2,7,1,14.346976)) 
+# end rise reverse, rise_height
+# sketch.addConstraint(Sketcher.Constraint('Distance',7,1,7,2,rise_height))
+sketch.addConstraint(Sketcher.Constraint('DistanceY',7,2,7,1,rise_height)) 
 
 
 pad=body.newObject('PartDesign::Pad','Pad')
 pad.Profile = (sketch, ['',])
-pad.Length = 10
+pad.Length = stringer_thickness
 pad.ReferenceAxis = (sketch,['N_Axis'])
 sketch.Visibility = False
 
-pad.Length = 9.525000
+pad.Length = stringer_thickness
 pad.TaperAngle = 0.000000
 pad.UseCustomVector = 0
 pad.Direction = (0, 0, 1)
